@@ -1,49 +1,49 @@
 import java.util.Arrays;
 
-/**
- * Created by Dell on 24.10.2016.
- */
-
 public class SameElementsSearch {
 
-    public static String[] sameElementsSearch(String[] array) {
+    public static String[] searchEqualElements(String[] arrayOfStrings) {
 
         // отсортируем, чтобы все одинаковые элементы шли друг за другом
-        Arrays.sort(array);
-        String[] arraySameElements = new String[array.length];
-        int index = 0;
-        boolean flSameElement = false;
+        Arrays.sort(arrayOfStrings);
+        return createArrayOfUniqueElements(arrayOfStrings);
+    }
 
-        // пройдём по массиву и сложим в arraySameElements уникальные повторяющиеся элементы
-        for(int i = 0; i < array.length - 1; i++){
-            while(i < array.length - 1 && array[i].equals(array[i+1])){
-                i++;
-                flSameElement = true;
-            }
-            if(flSameElement)
-                arraySameElements[index++] = array[i];
-            flSameElement = false;
+    private static String[] createArrayOfUniqueElements(String[] arrayOfStrings){
+        String[] arraySameElements = new String[arrayOfStrings.length];
+        int equalElementsCount = 0;
+
+        for(int arrayIndex = 0; arrayIndex < arrayOfStrings.length - 1; arrayIndex++){
+            int skippedEqualElements = skippedEqualElements(arrayOfStrings, arrayIndex);
+            if(skippedEqualElements > 0)
+                arraySameElements[equalElementsCount++] = arrayOfStrings[arrayIndex];
         }
+        return cutArrayByLength(arraySameElements, equalElementsCount);
+    }
 
-        // убираем лишние нулевые элементы
-        String[] result = new String[index];
-        System.arraycopy(arraySameElements, 0, result, 0, result.length);
-        return result;
+    private static int skippedEqualElements(String[] arrayOfStrings, int arrayIndex){
+        int skippedEqualElements = 0;
+        while(arrayIndex < arrayOfStrings.length - 1 &&
+                arrayOfStrings[arrayIndex].equals(arrayOfStrings[arrayIndex+1])){
+            arrayIndex++;
+            skippedEqualElements++;
+        }
+        return skippedEqualElements;
+    }
+
+    private static String[] cutArrayByLength(String[] arrayOfStrings, int arrayLength){
+        String[] ret = new String[arrayLength];
+        System.arraycopy(arrayOfStrings, 0, ret, 0, arrayLength);
+        return ret;
     }
 
     public static boolean testSameElementSearch(){
 
         String[] array = {"aa", "bb", "ba", "bb", "aa", "BB"};
-        String[] testEqualElements = sameElementsSearch(array);
-        String[] correctArray = {"aa","bb"};
-        if(!Arrays.equals(correctArray, testEqualElements))
-            return false;
+        String[] testEqualElements = searchEqualElements(array);
+        String[] expectedArrayOfEqualElements = {"aa","bb"};
 
-        String[] array1 = {"aa", "aa", "AA", "aaa", "a", "Aa"};
-        String[] testEqualElements1 = sameElementsSearch(array1);
-        String[] correctArray1 = {"aa"};
-
-        return Arrays.equals(correctArray1, testEqualElements1);
+        return Arrays.equals(testEqualElements, expectedArrayOfEqualElements);
     }
 
     /*
@@ -56,20 +56,26 @@ public class SameElementsSearch {
         System.out.println("}");
     }
 
+    private static boolean checkTests() {
+        System.out.print("running tests: ");
+        boolean testResult = testSameElementSearch();
+        if(testResult == true)
+            System.out.println("TRUE");
+        else
+            System.out.println("FALSE");
+        return testResult;
+    }
+
     public static void main(String[] args) {
 
-        boolean passTests = testSameElementSearch();
-        if(passTests){
-            System.out.println("Running tests: true");
-        }
-        else{
-            System.out.println("Running tests: false");
-        }
+        boolean passTests = checkTests();
+        if(!passTests)
+            return;
 
         String[] array = {"BB", "cc", "ba", "bb", "ca", "BB"};
         printArray(array);
         System.out.println("Equal elements in array:");
-        String[] equalElements = sameElementsSearch(array);
+        String[] equalElements = searchEqualElements(array);
         printArray(equalElements);
     }
 }
